@@ -1,0 +1,387 @@
+Prompt for Replit AI
+
+Goal: Build a production-ready, responsive marketing site for Pioneer Multi-Purpose Cooperative Society Ltd. (“Pioneer Cooperative”) using Python + Flask, matching the look/feel of the mockups we discussed (Nigerian corporate microfinance vibe: dark pine greens, clear typography, strong hero with blurred overlay). Everything should be in one project and runnable on Replit with no manual tweaks other than uploading two images (logo + hero).
+
+1) Tech & Project Setup
+
+Stack: Python 3 + Flask (no DB; store form submissions in CSV).
+
+Run command: python main.py (app runs at 0.0.0.0:8000).
+
+Dependencies (requirements.txt):
+
+Flask==3.0.3
+python-dotenv==1.0.1
+
+
+Environment: Create main.py, templates/, static/css, static/js, static/img, and data/.
+
+Secret: Use SECRET_KEY from env if present; fallback "dev-secret".
+
+2) File/Folder Structure (create all with content)
+requirements.txt
+main.py
+/templates
+  base.html
+  index.html
+  about.html
+  loan_products.html
+  requirements.html
+  faq.html
+  apply.html
+  contact.html
+  thank_you.html
+/static
+  /css/styles.css
+  /js/main.js
+  /img/logo.svg            # placeholder if not uploaded
+  /img/hero.jpg            # placeholder if not uploaded
+/data
+  applications.csv         # created with headers on first run
+  contacts.csv             # created with headers on first run
+
+3) Design System
+
+Color palette (use as CSS variables):
+
+--pine: #0B2A25 (primary background)
+
+--pine-2: #132E29 (section gradient end)
+
+--mint: #EDF7F2 (text on dark, borders)
+
+--cream: #F4F1EA (rare neutral)
+
+--accent: #1F6F54 (primary CTA button)
+
+--lime: #A3D65C (icon/accents, sparingly)
+
+--text: #152235 (dark text on light)
+
+--white: #FFFFFF
+
+Typography:
+
+System stack: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", sans-serif.
+
+Headings: bold, tight leading; body comfortable reading.
+
+Heading sizes:
+
+Hero H1: clamp(2rem, 5vw, 3.5rem).
+
+Page H1: ~2rem–2.4rem.
+
+Buttons: bold, rounded (10px), large touch targets.
+
+Layout & Components:
+
+Header: sticky; dark translucent bar over content; brand at left (logo + “PIONEER COOPERATIVE” text), nav links + “Apply Online” CTA at right.
+
+Hero (Home): full-width section with static/img/hero.jpg as background; dark overlay rgba(11,42,37,.78); centered H1 + subtext + two buttons (“Apply Now” primary; “View Requirements” outline).
+
+Sections: padded (64px top/bottom), alternate dark gradients (--pine -> --pine-2). Cards have translucent surfaces.
+
+Buttons:
+
+.btn-primary: background --accent, text white.
+
+.btn-outline: transparent bg, 2px mint border, mint text.
+
+Forms: rounded inputs, translucent inputs on dark background, labeled; grid for multiple fields; client-side required; server-side validation.
+
+Footer: dark bar, left copyright text, right small nav.
+
+Accessibility:
+
+Sufficient contrast, focus states, semantic HTML, “Skip to content” not required but aria labels okay.
+
+alt text for images, descriptive link text.
+
+Responsive:
+
+Breakpoints: simple fluid layout; grid 2/3 collapse to 1 on narrow screens.
+
+4) Routes & Pages
+GET / (Home)
+
+Hero section (as in mockup):
+
+H1: “Quick, Reliable Microfinance for Your Needs”
+
+Subtitle: “Transparent rates. Fast decisions. Human support.”
+
+Buttons: Apply Now → /apply, View Requirements → /requirements
+
+Nothing else below hero for now (keep it clean).
+
+GET /about
+
+Sections:
+
+About Us (single paragraph):
+
+Pioneer Cooperative is a microfinance institution dedicated to wealth creation & economic growth in Nigeria through accessible and flexible financial services.
+
+Our Mission (single paragraph):
+
+Pioneer Cooperative empowers individuals & families by providing opportunities to access loans, build savings, and achieve financial stability. We believe in financial inclusion, transparency, and community support.
+
+Why Choose Pioneer Cooperative? (three cards)
+
+Personalized Service — We take time to understand your unique financial needs.
+
+Competitive Rates — Fair interest rates and flexible terms to meet your goals.
+
+Community Focus — We support growth and wellbeing for our members.
+
+GET /loan-products
+
+H1: Loan Products
+
+Intro paragraph:
+
+Browse our range of microfinance loan products designed to support your personal and business financial needs.
+
+Three cards in a 3-column grid:
+
+Business Loans — Expand your business with flexible options and competitive rates.
+
+Personal Loans — Meet your individual goals with tailored lending solutions.
+
+Agriculture Loans — Invest in farming activities with products designed for the sector.
+
+Callout panel with Get Started + button Apply Online → /apply.
+
+GET /requirements
+
+H1: Requirements for Loan
+
+Ordered list exactly as below:
+
+2 Passport photographs of Applicant
+
+Security:
+
+Original Credentials of Academic Qualification
+
+Original service documents
+
+Third party guarantor which shall be a public servant
+
+Post-dated cheques of the Applicant
+
+Post-dated cheques of the guarantor in case of default by the applicant
+
+Means of identification
+
+Utility bill to confirm residence
+
+Non-refundable documentation/legal fee of ₦5,000
+
+1 Passport photograph of the guarantor
+
+Verification of documents
+
+Button: Apply Online → /apply.
+
+GET|POST /apply
+
+Page intro:
+
+Complete the application below. The documentation/legal fee of ₦5,000 is payable within the process.
+
+Form fields (with client required where indicated; server validates same):
+
+Personal Information
+
+First Name* (text)
+
+Last Name* (text)
+
+Date of Birth* (date)
+
+Phone Number* (tel)
+
+Email Address* (email)
+
+Security
+
+Academic Qualification (text)
+
+Service Documents (text)
+
+Guarantor’s Name (text)
+
+Guarantor’s Occupation (text)
+
+Consent checkbox (optional):
+
+“I confirm that the information provided is accurate and I agree to be contacted.”
+
+Submit button Submit Application
+
+On POST success: append CSV row to data/applications.csv with header:
+
+timestamp,first_name,last_name,dob,email,phone,
+academic_qualification,service_documents,guarantor_name,
+guarantor_occupation,consent
+
+
+then redirect to /thank-you.
+
+On validation error: flash error banner and re-render form preserving inputs.
+
+GET|POST /contact
+
+Left column: Contact info list
+
+Location: Uyo, Akwa Ibom State
+
+Phone: 0802 330 6775
+
+Email: pioneercooperativehq@gmail.com
+
+Right column: Contact form with fields (all required):
+
+Name, Email, Message (textarea)
+
+On POST success: append row to data/contacts.csv (headers: timestamp,name,email,message) and redirect to /thank-you. On error: flash error and preserve inputs.
+
+GET /faq
+
+H1: Frequently Asked Questions
+
+Use HTML <details> accordion blocks with four Q&As:
+
+What is a microfinance loan?
+Microfinance loans offer small amounts to support individuals and SMEs with limited access to traditional banking.
+
+Who is eligible to apply?
+Nigerian residents with valid identification; other criteria may apply based on loan product.
+
+How quickly can I access funds?
+Approvals can be fast when documentation is complete—often within a few business days.
+
+What types of security are accepted?
+Credentials, service documents, post-dated cheques, and a public servant guarantor (as specified in our requirements).
+
+Bottom callout: Have Other Questions? + button to Contact.
+
+GET /thank-you
+
+Centered panel:
+
+H1: Thank You!
+
+Paragraph: Your submission has been received. We’ll get back to you shortly.
+
+Button: Back to Home → /.
+
+5) Header & Footer
+
+Header is sticky, translucent, dark, with backdrop blur, and reduces height on mobile. Includes:
+
+Left: logo image (/static/img/logo.svg) + wordmark “PIONEER COOPERATIVE”.
+
+Right: nav (Home, About Us, Loan Products, Requirements, FAQ, Contact, and Apply Online CTA).
+
+Active link state indicated visually.
+
+Footer uses darker shade, subtle border top, copyright left, small nav right.
+
+6) Assets (use placeholders if not uploaded)
+
+static/img/logo.svg: placeholder simple SVG (lime figure + wordmark); allow user to replace easily.
+
+static/img/hero.jpg: placeholder dark blurred office photo; allow user to replace easily.
+
+Favicon can reuse logo.svg.
+
+7) Forms & Storage
+
+Use flash() for error feedback.
+
+Create /data/ if absent. Create applications.csv and contacts.csv with headers if missing.
+
+Add simple server-side validation for required fields and email format (basic).
+
+8) CSS Requirements
+
+Create static/css/styles.css using variables above.
+
+Components to style:
+
+Sticky header with translucent background: rgba(11,42,37,0.92) and backdrop blur.
+
+Hero with background image + overlay; text centered.
+
+Section gradients: linear-gradient(180deg, var(--pine) 0%, var(--pine-2) 100%).
+
+Cards with subtle glass effect: translucent bg + 1px light border.
+
+Buttons: .btn, .btn-primary, .btn-outline.
+
+Forms: rounded inputs, translucent background, high-contrast text, focus outlines.
+
+Grids: .grid-2, .grid-3, collapse to single column on narrow screens.
+
+.callout, .alert, .flash utility blocks.
+
+9) JavaScript
+
+static/js/main.js: keep minimal (placeholder). No heavy interactivity is required now.
+
+10) SEO & Meta
+
+Each page: unique <title>… • Pioneer Cooperative</title>.
+
+Semantic headings and content structure.
+
+Meaningful alt text for images.
+
+11) Acceptance Criteria (must pass)
+
+Replit project runs with Run (starts Flask on port 8000).
+
+All routes exist and render exactly as specified with the given copy.
+
+Header is sticky, translucent, and shows active nav link; CTA is styled.
+
+Home hero uses background photo + overlay + H1/subtitle + two buttons.
+
+Forms:
+
+Client required attributes on necessary fields.
+
+Server validation errors flash and preserve inputs.
+
+Successful submissions append a new row to appropriate CSV then redirect to /thank-you.
+
+Theming: dark pine aesthetic, mint text, gradients, cards, buttons as defined.
+
+Responsive on desktop/tablet/mobile (grids collapse cleanly).
+
+Project includes placeholder logo.svg and hero.jpg so it looks good even before user uploads theirs.
+
+Code is organized and readable (Jinja templates extend base.html).
+
+No 404s, static assets load, and no console errors.
+
+12) After Build: Quick Usage Notes (show to user in README or console)
+
+To replace branding, upload:
+
+static/img/logo.svg (or PNG/JPG and update <img> path in base.html)
+
+static/img/hero.jpg
+
+To view submissions:
+
+Open /data/applications.csv and /data/contacts.csv.
+
+To change colors/spacing: edit static/css/styles.css.
+
+To add more FAQs or products: edit templates/faq.html / loan_products.html.
+
+Please generate the full project with all files populated according to this spec, including working placeholder assets, so it runs immediately on Replit.
